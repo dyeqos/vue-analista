@@ -1,4 +1,4 @@
-import { Dialog } from 'quasar';
+import { Dialog, Loading, Notify } from 'quasar';
 import { storeToRefs } from 'pinia';
 import { api } from 'src/boot/axios';
 
@@ -35,22 +35,28 @@ const useClient = () => {
   const { showModalCreate } = storeToRefs(store);
 
   const getClients = async () => {
+    Loading.show();
     const data = await getClientResponse();
     store.setClientsStore(data);
+    Loading.hide();
   };
 
   const saveClient = async () => {
+    Loading.show();
     await saveClientResponse(store.getClientStore().value);
     await getClients();
     showModalCreate.value = false;
     store.resetClient();
+    Loading.hide();
   };
 
   const updateClient = async () => {
+    Loading.show();
     await updateClientResponse(store.getClientStore().value);
     await getClients();
     showModalCreate.value = false;
     store.resetClient();
+    Loading.hide();
   };
 
   const deleteClient = async (client: IClient) => {
@@ -66,8 +72,19 @@ const useClient = () => {
         color: 'primary',
       },
     }).onOk(async () => {
-      await deleteClientResponse(client);
-      getClients();
+      try {
+        Loading.show();
+        await deleteClientResponse(client);
+        getClients();
+      } catch (e: any) {
+        Notify.create({
+          message: e.response.data,
+          position: 'top-right',
+          color: 'red',
+        });
+      }finally{
+        Loading.hide();
+      }
     });
   };
 
@@ -77,6 +94,7 @@ const useClient = () => {
   };
 
   const searchClient = async () => {
+    Loading.show();
     const client = await searchClientResponse(
       store.getClientSearchStore().value
     );
@@ -86,6 +104,7 @@ const useClient = () => {
       store.setClientStore(client);
       store.setClientsStore(clientList);
     }
+    Loading.hide();
   };
 
   return {

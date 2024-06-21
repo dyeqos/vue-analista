@@ -2,14 +2,11 @@
 import useClient from '../../clients/composables/useClient';
 import ClientTable from '../components/ClientTableComponent.vue';
 import { useRouter } from 'vue-router';
-import { onUnmounted } from 'vue';
 const {
   getClientSearchStore,
   searchClient,
-  resetClient,
   getClientsStore,
   resetSearchClient,
-  resetListClient,
 } = useClient();
 const { push } = useRouter();
 
